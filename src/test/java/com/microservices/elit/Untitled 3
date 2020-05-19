@@ -1,0 +1,114 @@
+package com.microservices.elit;
+
+
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.security.oauth2.common.util.JacksonJsonParser;
+import org.springframework.security.web.FilterChainProxy;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.context.WebApplicationContext;
+
+
+
+@RunWith(SpringRunner.class)
+@WebAppConfiguration
+@SpringBootTest
+//@AutoConfigureMockMvc
+public class TestDemande {
+	
+	 private MockMvc mockMvc;
+	
+	
+	 
+	 @Autowired
+	 private WebApplicationContext wac;
+	 
+	 @Autowired
+	 private FilterChainProxy springSecurityFilterChain;
+	 
+	 private static final String CLIENT_ID = "Kentache";
+	 private static final String CLIENT_SECRET = "amira9696";
+	
+	 private static final String CONTENT_TYPE = "application/json;charset=UTF-8";
+	
+	 //private static final String EMAIL = "jim@yahoo.com";
+//	 private static final String NAME = "360gunner";
+	 
+/*
+	 @Test
+	 public void obtainAccessToken() throws Exception {
+	        final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+	        params.add("grant_type", "password");
+	        params.add("client_id", CLIENT_ID);
+	        params.add("client_secret", CLIENT_SECRET);	        
+	        params.add("username", "360gunner");
+	        params.add("password","1998");
+
+	        // @formatter:off
+
+	       // MockHttpServletRequest request;
+			ResultActions result = mockMvc.perform(post("http://localhost:9999/elit/oauth2/authorize")
+	                               .params(params)
+	                                 //httpBasic(CLIENT_ID, CLIENT_SECRET)
+	                               .accept(CONTENT_TYPE))
+	                               .andExpect(status().isOk())
+	                               .andExpect(content().contentType(CONTENT_TYPE));
+	        
+	        // @formatter:on
+
+	        String resultString = result.andReturn().getResponse().getContentAsString();
+
+	        JacksonJsonParser jsonParser = new JacksonJsonParser();
+	       // return jsonParser.parseMap(resultString).get("access_token").toString();
+	    }*/
+	 
+	 @Before
+	    public void setup() {
+	        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac)
+	          .addFilter(springSecurityFilterChain).build();
+	    }
+	 
+	 @Test
+	 public void givenNoToken_whenGetSecureRequest_thenUnauthorized() throws Exception {
+	     mockMvc.perform(get("/Demande"))
+	       .andExpect(status().isUnauthorized());
+	 }
+	 
+	 
+	 @Test
+	 public void givenToken_whenPostGetSecureRequest_thenOk() throws Exception {
+	     String accessToken = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODk0MTg2MTIsInVzZXJfbmFtZSI6IjM2MGd1bm5lciIsImF1dGhvcml0aWVzIjpbIlJPTEVfR0VTVE9DSyIsIlJPTEVfVFBNTSJdLCJqdGkiOiJjMGNhMGUzZS1kZGIyLTQxZGEtOWM4Ni1hOGEyMmM1ZDRiZGIiLCJjbGllbnRfaWQiOiJLZW50YWNoZSIsInNjb3BlIjpbIm9wZW5pZCJdfQ.bsq7t_9Mzme6EMoJsvVEvBnI6Jxu1q7Pq-EepuAsNxsxzpEDCiP_HSI4tcFQ5NKTgWYwPmpPxgWETUE4LYoqFpdF2fZgXWZHy1Q0I4747CsOATtIrt1Sxz7ov2pMyMjXwrpy0-BWwdrtDfW4-KpNy5nuK000rb1VE7z504NVL6bY3anvR6hQdKCuYzZ6CZHx7te3fACj5_M8HUCjfUIPGZ-5uH1zWSA0Uiuxeb3Pzvcty2g7pTJcP3zdl1KoX9OkpkX0iQ4O1IShXhg6vD4elKPeMck0IIQt0t8aILroj0s4T681fepNF0eGyFaIS2_vHmKrggK9O1KUiEoYcfpC1w";	  
+	           
+	     mockMvc.perform(get("/Demande")
+	       .header("Authorization", "Bearer " + accessToken))
+	       
+	      // .accept(application/json;charset=UTF-8))
+	       .andExpect(status().isOk());
+	  
+	 }
+	 
+}
+
+
